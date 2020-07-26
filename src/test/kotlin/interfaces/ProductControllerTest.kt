@@ -1,7 +1,6 @@
 package com.checkout.interfaces
 
 import com.checkout.Checkout
-import com.checkout.interfaces.controller.ProductController
 import com.checkout.interfaces.dto.ProductDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -11,22 +10,21 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.junit4.SpringRunner
 
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(classes = [Checkout::class, ProductController::class], webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = [Checkout::class], webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureWebMvc
 @ActiveProfiles(value = ["test"])
-@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:schema.sql", "classpath:data.sql"])
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:/schema.sql", "classpath:/data.sql"])
 class ProductControllerTest {
 
     private val builder = StringBuilder()
-    private var SERVER_URL = "http://localhost:8080"
+    private var SERVER_URL = "http://localhost:8080/api/v1"
     private val restTemplate: TestRestTemplate = TestRestTemplate()
 
     @Test
@@ -45,7 +43,7 @@ class ProductControllerTest {
 
     @Test
     fun testGetProductSuccess() {
-        val productName = "DELL 140"
+        val productName = "DELL 150"
         builder.clear()
         val endpoint = builder.append(SERVER_URL).append("/product/get?productName=").append(productName).toString()
 
@@ -55,5 +53,63 @@ class ProductControllerTest {
         )
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body.id).isEqualTo(1)
+        assertThat(result.body.type).isEqualTo("LAPTOP")
+        assertThat(result.body.name).isEqualTo("DELL 150")
+        assertThat(result.body.description).isEqualTo("LAPTOP - DELL 150 16Go Ram")
+        assertThat(result.body.remainingQty).isEqualTo(5)
+
+
     }
+
+    @Test
+    fun testCreateProductFailure() {
+        builder.clear()
+        val endpoint = builder.append(SERVER_URL).append("/product/create").toString()
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val product = ProductDto(id = 3,
+                type = null,
+                name = "Razer T20",
+                description = "Razer Gaming Mouse",
+                remainingQty = 10)
+
+        val requestEntity: HttpEntity<ProductDto> = HttpEntity<ProductDto>(product, headers)
+
+        val result : ResponseEntity<ProductDto> = restTemplate.postForEntity(
+                endpoint,
+                requestEntity,
+                ProductDto::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @Test
+    fun testCreateProductSuccess() {
+        builder.clear()
+        val endpoint = builder.append(SERVER_URL).append("/product/create").toString()
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val product = ProductDto(id = 2,
+                type = "Mouse",
+                name = "Razer T20",
+                description = "Razer Gaming Mouse",
+                remainingQty = 10)
+
+        val requestEntity: HttpEntity<ProductDto> = HttpEntity<ProductDto>(product, headers)
+
+        val result : ResponseEntity<ProductDto> = restTemplate.postForEntity(
+                endpoint,
+                requestEntity,
+                ProductDto::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
 }

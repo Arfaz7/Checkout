@@ -1,1 +1,1 @@
-insert into product(id, type, name, description, remaining_qty) values(2, 'LAPTOP', 'DELL 150', 'LAPTOP - DELL 150 16Go Ram', 5)
+insert into product(id, type, name, description, remaining_qty) values(1, 'LAPTOP', 'DELL 150', 'LAPTOP - DELL 150 16Go Ram', 5)
