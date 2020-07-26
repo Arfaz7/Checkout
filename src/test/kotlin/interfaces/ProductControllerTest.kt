@@ -56,10 +56,9 @@ class ProductControllerTest {
         assertThat(result.body.id).isEqualTo(1)
         assertThat(result.body.type).isEqualTo("LAPTOP")
         assertThat(result.body.name).isEqualTo("DELL 150")
+        assertThat(result.body.price).isEqualTo(700)
         assertThat(result.body.description).isEqualTo("LAPTOP - DELL 150 16Go Ram")
         assertThat(result.body.remainingQty).isEqualTo(5)
-
-
     }
 
     @Test
@@ -73,6 +72,7 @@ class ProductControllerTest {
         val product = ProductDto(id = 3,
                 type = null,
                 name = "Razer T20",
+                price = 50,
                 description = "Razer Gaming Mouse",
                 remainingQty = 10)
 
@@ -98,6 +98,7 @@ class ProductControllerTest {
         val product = ProductDto(id = 2,
                 type = "Mouse",
                 name = "Razer T20",
+                price = 50,
                 description = "Razer Gaming Mouse",
                 remainingQty = 10)
 
@@ -110,6 +111,11 @@ class ProductControllerTest {
         )
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body.id).isEqualTo(2)
+        assertThat(result.body.type).isEqualTo("Mouse")
+        assertThat(result.body.name).isEqualTo("Razer T20")
+        assertThat(result.body.price).isEqualTo(50)
+        assertThat(result.body.description).isEqualTo("Razer Gaming Mouse")
+        assertThat(result.body.remainingQty).isEqualTo(10)
     }
-
 }

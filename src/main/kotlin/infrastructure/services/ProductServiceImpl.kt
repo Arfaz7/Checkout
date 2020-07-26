@@ -32,6 +32,7 @@ class ProductServiceImpl(@Autowired
         return ProductDto(product.id,
                         product.type,
                         product.name,
+                        product.price,
                         product.description,
                         product.remainingQty)
     }
@@ -40,6 +41,7 @@ class ProductServiceImpl(@Autowired
         return Product(id= productDto.id!!,
                     type = productDto.type!!,
                     name = productDto.name!!,
+                    price = productDto.price!!,
                     description = productDto.description!!,
                     remainingQty = productDto.remainingQty!!)
     }

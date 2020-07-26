@@ -47,6 +47,31 @@ class ProductController(@Autowired
                 ProductDto(id= productDto.id,
                         type = productDto.type,
                         name = productDto.name,
+                        price = productDto.price,
+                        description = productDto.description,
+                        remainingQty = productDto.remainingQty
+                )
+        )
+
+        if (createdProduct == null)
+            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        else
+            response = ResponseEntity.status(HttpStatus.OK).body(createdProduct)
+
+        return response
+    }
+
+    @PutMapping(value= ["/update/price"])
+    fun updateProductPrice(@RequestParam @ApiParam(name= "name", required = true) productDto: ProductDto): ResponseEntity<ProductDto> {
+
+        logger.info("Creating product ${productDto.name}")
+
+        var response : ResponseEntity<ProductDto>
+        val createdProduct: ProductDto? = productService.createProduct(
+                ProductDto(id= productDto.id,
+                        type = productDto.type,
+                        name = productDto.name,
+                        price = productDto.price,
                         description = productDto.description,
                         remainingQty = productDto.remainingQty
                 )
