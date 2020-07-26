@@ -17,16 +17,15 @@ class ProductServiceImpl(@Autowired
         return if(product != null) toDto(product) else product
     }
 
-    override fun createProduct(productDto: ProductDto): ProductDto? {
+    override fun createOrUpdateProduct(productDto: ProductDto): ProductDto? {
         return try {
             val product: Product = productRepository.save(toEntity(productDto))
             return toDto(product)
         }catch(ex: Exception) {
             return null
         }
-
-
     }
+
 
     fun toDto(product: Product): ProductDto {
         return ProductDto(product.id,

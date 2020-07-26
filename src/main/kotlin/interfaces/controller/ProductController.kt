@@ -38,12 +38,12 @@ class ProductController(@Autowired
     }
 
     @PostMapping(value= ["/create"])
-    fun createProduct(@RequestBody @ApiParam(name= "type", required = true) productDto: ProductDto): ResponseEntity<ProductDto> {
+    fun createProduct(@RequestBody @ApiParam(name= "product", required = true) productDto: ProductDto): ResponseEntity<ProductDto> {
 
         logger.info("Creating product ${productDto.name}")
 
         var response : ResponseEntity<ProductDto>
-        val createdProduct: ProductDto? = productService.createProduct(
+        val createdProduct: ProductDto? = productService.createOrUpdateProduct(
                 ProductDto(id= productDto.id,
                         type = productDto.type,
                         name = productDto.name,
@@ -62,25 +62,36 @@ class ProductController(@Autowired
     }
 
     @PutMapping(value= ["/update/price"])
-    fun updateProductPrice(@RequestParam @ApiParam(name= "name", required = true) productDto: ProductDto): ResponseEntity<ProductDto> {
+    fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
+                           @RequestBody @ApiParam(name= "price", required = true) productPrice: Int): ResponseEntity<ProductDto> {
 
-        logger.info("Creating product ${productDto.name}")
+        logger.info("Updating product ${productName}")
 
         var response : ResponseEntity<ProductDto>
-        val createdProduct: ProductDto? = productService.createProduct(
-                ProductDto(id= productDto.id,
-                        type = productDto.type,
-                        name = productDto.name,
-                        price = productDto.price,
-                        description = productDto.description,
-                        remainingQty = productDto.remainingQty
-                )
-        )
 
-        if (createdProduct == null)
-            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-        else
-            response = ResponseEntity.status(HttpStatus.OK).body(createdProduct)
+        val product = productService.getProduct(productName)
+
+        if (product != null) {
+            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(
+                    ProductDto(id = product.id,
+                            type = product.type,
+                            name = product.name,
+                            price = productPrice,
+                            description = product.description,
+                            remainingQty = product.remainingQty
+                    )
+            )
+
+            if (updatedProduct != null) {
+                response = ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
+            }
+            else {
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+            }
+        }
+        else {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        }
 
         return response
     }

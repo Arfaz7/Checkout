@@ -8,6 +8,7 @@ import org.junit.runner.RunWith
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
@@ -117,5 +118,57 @@ class ProductControllerTest {
         assertThat(result.body.price).isEqualTo(50)
         assertThat(result.body.description).isEqualTo("Razer Gaming Mouse")
         assertThat(result.body.remainingQty).isEqualTo(10)
+    }
+
+    @Test
+    fun testUpdateProductPriceFailure() {
+        builder.clear()
+
+        val productName = "DELL 170"
+        val price = 67
+        val endpoint = builder.append(SERVER_URL).append("/product/update/price?productName=").append(productName).toString()
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val requestEntity: HttpEntity<Int> = HttpEntity<Int>(price, headers)
+
+        val result : ResponseEntity<ProductDto> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.PUT,
+                requestEntity,
+                ProductDto::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+
+    @Test
+    fun testUpdateProductPriceSuccess() {
+        builder.clear()
+
+        val productName = "DELL 150"
+        val price = 900
+        val endpoint = builder.append(SERVER_URL).append("/product/update/price?productName=").append(productName).toString()
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val requestEntity: HttpEntity<Int> = HttpEntity<Int>(price, headers)
+
+        val result : ResponseEntity<ProductDto> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.PUT,
+                requestEntity,
+                ProductDto::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body.id).isEqualTo(1)
+        assertThat(result.body.type).isEqualTo("LAPTOP")
+        assertThat(result.body.name).isEqualTo("DELL 150")
+        assertThat(result.body.price).isEqualTo(900)
+        assertThat(result.body.description).isEqualTo("LAPTOP - DELL 150 16Go Ram")
+        assertThat(result.body.remainingQty).isEqualTo(5)
     }
 }
