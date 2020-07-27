@@ -20,9 +20,18 @@ class ProductServiceImpl(@Autowired
     override fun createOrUpdateProduct(productDto: ProductDto): ProductDto? {
         return try {
             val product: Product = productRepository.save(toEntity(productDto))
-            return toDto(product)
+            toDto(product)
         }catch(ex: Exception) {
-            return null
+            null
+        }
+    }
+
+    override fun deleteProduct(productDto: ProductDto): Boolean {
+        return try {
+            productRepository.delete(toEntity(productDto))
+            true
+        } catch (ex: Exception) {
+            false
         }
     }
 
@@ -38,8 +47,8 @@ class ProductServiceImpl(@Autowired
 
     fun toEntity(productDto: ProductDto): Product {
         return Product(id= productDto.id!!,
-                    type = productDto.type!!,
-                    name = productDto.name!!,
+                    type = productDto.type!!.toUpperCase(),
+                    name = productDto.name!!.toUpperCase(),
                     price = productDto.price!!,
                     description = productDto.description!!,
                     remainingQty = productDto.remainingQty!!)

@@ -28,6 +28,7 @@ class ProductControllerTest {
     private var SERVER_URL = "http://localhost:8080/api/v1"
     private val restTemplate: TestRestTemplate = TestRestTemplate()
 
+    // Get endpoint tests
     @Test
     fun testGetProductNotFound() {
         val productName = "DELL 400"
@@ -63,6 +64,7 @@ class ProductControllerTest {
         assertThat(result.body.remainingQty).isEqualTo(5)
     }
 
+    // Create endpoint tests
     @Test
     fun testCreateProductFailure() {
         builder.clear()
@@ -115,13 +117,14 @@ class ProductControllerTest {
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(result.body.id).isEqualTo(2)
-        assertThat(result.body.type).isEqualTo("Mouse")
-        assertThat(result.body.name).isEqualTo("Razer T20")
+        assertThat(result.body.type).isEqualTo("MOUSE")
+        assertThat(result.body.name).isEqualTo("RAZER T20")
         assertThat(result.body.price).isEqualTo(50)
         assertThat(result.body.description).isEqualTo("Razer Gaming Mouse")
         assertThat(result.body.remainingQty).isEqualTo(10)
     }
 
+    // Update endpoints tests
     @Test
     fun testUpdateProductPriceFailure() {
         builder.clear()
@@ -174,4 +177,96 @@ class ProductControllerTest {
         assertThat(result.body.description).isEqualTo("LAPTOP - DELL 150 16Go Ram")
         assertThat(result.body.remainingQty).isEqualTo(5)
     }
+
+    @Test
+    fun testUpdateProductDescriptionFailure() {
+        builder.clear()
+
+        val productName = "DELL 170"
+        val description = "LAPTOP - DELL 170 new Description"
+        val endpoint = builder.append(SERVER_URL).append("/product/update/description?productName=").append(productName).toString()
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val requestEntity: HttpEntity<String> = HttpEntity<String>(description, headers)
+
+        val result : ResponseEntity<ProductDto> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.PUT,
+                requestEntity,
+                ProductDto::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(result.body).isNull()
+    }
+
+    @Test
+    fun testUpdateProductDescriptionSuccess() {
+        builder.clear()
+
+        val productName = "DELL 150"
+        val description = "LAPTOP - DELL 150 New Description"
+        val endpoint = builder.append(SERVER_URL).append("/product/update/description?productName=").append(productName).toString()
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val requestEntity: HttpEntity<String> = HttpEntity<String>(description, headers)
+
+        val result : ResponseEntity<ProductDto> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.PUT,
+                requestEntity,
+                ProductDto::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body.id).isEqualTo(1)
+        assertThat(result.body.type).isEqualTo("LAPTOP")
+        assertThat(result.body.name).isEqualTo("DELL 150")
+        assertThat(result.body.price).isEqualTo(700)
+        assertThat(result.body.description).isEqualTo("LAPTOP - DELL 150 New Description")
+        assertThat(result.body.remainingQty).isEqualTo(5)
+    }
+
+
+    // Delete endpoint test
+    @Test
+    fun testDeleteNotFound() {
+        builder.clear()
+
+        val productName = "DELL 170"
+        val endpoint = builder.append(SERVER_URL).append("/product/delete?productName=").append(productName).toString()
+
+        val result : ResponseEntity<String> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.DELETE,
+                null,
+                String::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(result.body).isEqualTo("ERROR PRODUCT NOT FOUND")
+    }
+
+    @Test
+    fun testDeleteSuccess() {
+        builder.clear()
+
+        val productName = "DELL 150"
+        val endpoint = builder.append(SERVER_URL).append("/product/delete?productName=").append(productName).toString()
+
+        val result : ResponseEntity<String> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.DELETE,
+                null,
+                String::class
+        )
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body).isEqualTo("SUCCESS")
+    }
+
 }

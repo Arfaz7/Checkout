@@ -94,4 +94,57 @@ class ProductController(@Autowired
 
         return response
     }
+
+    @PutMapping(value= ["/update/description"])
+    fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
+                           @RequestBody @ApiParam(name= "description", required = true) productDescription: String): ResponseEntity<ProductDto> {
+
+        logger.info("Updating product ${productName} description")
+
+        var response : ResponseEntity<ProductDto>
+
+        val product = productService.getProduct(productName)
+
+        if (product != null) {
+            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(
+                    ProductDto(id = product.id,
+                            type = product.type,
+                            name = product.name,
+                            price = product.price,
+                            description = productDescription,
+                            remainingQty = product.remainingQty
+                    )
+            )
+
+            if (updatedProduct != null)
+                response = ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
+            else
+                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+
+        }
+        else {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        }
+
+        return response
+    }
+
+
+    @DeleteMapping(value= ["/delete"])
+    fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<String> {
+
+        logger.info("Updating product ${productName} description")
+
+        var response : ResponseEntity<String>
+        val product = productService.getProduct(productName)
+
+        if (product != null) {
+            val result = productService.deleteProduct(product)
+            response = ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
+        } else {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR PRODUCT NOT FOUND")
+        }
+
+        return response
+    }
 }
