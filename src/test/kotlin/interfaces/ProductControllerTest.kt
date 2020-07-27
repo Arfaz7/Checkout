@@ -120,7 +120,6 @@ class ProductControllerTest {
         )
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.CREATED)
-        assertThat(result.body.id).isEqualTo(2)
         assertThat(result.body.type).isEqualTo("MOUSE")
         assertThat(result.body.name).isEqualTo("RAZER T20")
         assertThat(result.body.price).isEqualTo(50)

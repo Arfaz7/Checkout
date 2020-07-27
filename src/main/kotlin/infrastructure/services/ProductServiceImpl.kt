@@ -44,7 +44,8 @@ class ProductServiceImpl(@Autowired
             price = product.price,
             description = product.description,
             remainingQty = product.remainingQty,
-            deal = toDto(product.deal!!))
+            deal = if(product.deal != null) toDto(product.deal) else null
+    )
 
     fun toEntity(productDto: ProductDto): Product = Product(id= productDto.id,
             type = productDto.type!!.toUpperCase(),
@@ -52,15 +53,18 @@ class ProductServiceImpl(@Autowired
             price = productDto.price!!,
             description = productDto.description!!,
             remainingQty = productDto.remainingQty!!,
-            deal = toEntity(productDto.deal!!))
+            deal = if(productDto.deal != null) toEntity(productDto.deal) else null
+    )
 
     fun toDto(deal: Deal): DealDto = DealDto(id = deal.id,
             nbProductToBuy = deal.nbProductToBuy,
             nbProductDiscounted = deal.nbProductDiscounted,
-            discount = deal.discount)
+            discount = deal.discount
+    )
 
     fun toEntity(dealDto: DealDto): Deal = Deal(id = dealDto.id,
             nbProductToBuy = dealDto.nbProductToBuy!!,
             nbProductDiscounted = dealDto.nbProductDiscounted!!,
-            discount = dealDto.discount!!)
+            discount = dealDto.discount!!
+    )
 }

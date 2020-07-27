@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS BUNDLE;
 DROP TABLE IF EXISTS PRODUCT;
 DROP TABLE IF EXISTS DEAL;
 
@@ -17,4 +18,12 @@ CREATE TABLE PRODUCT (
   remaining_qty INT NOT NULL,
   deal_id INT DEFAULT NULL,
   foreign key (deal_id) references DEAL(id)
+);
+
+CREATE TABLE BUNDLE (
+    id INT AUTO_INCREMENT  PRIMARY KEY,
+    id_product INT NOT NULL,
+    foreign key (id_product) references PRODUCT(id),
+    id_offered_product INT NOT NULL,
+    foreign key (id_offered_product) references PRODUCT(id)
 );
