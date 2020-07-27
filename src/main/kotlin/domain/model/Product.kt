@@ -10,7 +10,7 @@ data class Product(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) val i
                     @Column(name="price", nullable = false) val price: Int,
                     @Column(name="description", nullable = true) val description: String,
                     @Column(name="remaining_qty", nullable = false) val remainingQty: Int,
-                    @OneToOne(fetch=FetchType.LAZY) @JoinColumn(name="DEAL_ID") val deal: Deal?) {
+                    @OneToOne(cascade = [CascadeType.ALL] ,fetch=FetchType.LAZY) @JoinColumn(name="DEAL_ID") val deal: Deal?) {
 
     constructor(): this(
             id=-1,

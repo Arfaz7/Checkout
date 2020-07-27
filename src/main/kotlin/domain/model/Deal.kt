@@ -10,7 +10,7 @@ data class Deal(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: 
                 @Column(name="discount", nullable = false) val discount: Double) {
 
     constructor(): this(
-            id= -1,
+            id = -1,
             nbProductToBuy = 0,
             nbProductDiscounted = 0,
             discount = .0

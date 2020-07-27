@@ -30,7 +30,7 @@ class ProductControllerTest {
 
     // Get endpoint tests
     @Test
-    fun testGetProductNotFound() {
+    fun `request a product with non existing name and get 404 NOT FOUND`  () {
         val productName = "DELL 400"
         builder.clear()
         val endpoint = builder.append(SERVER_URL).append("/product/get?productName=").append(productName).toString()
@@ -45,7 +45,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun testGetProductSuccess() {
+    fun `request a product with an existing name and get 200 SUCCESS`() {
         val productName = "DELL 150"
         builder.clear()
         val endpoint = builder.append(SERVER_URL).append("/product/get?productName=").append(productName).toString()
@@ -66,7 +66,7 @@ class ProductControllerTest {
 
     // Create endpoint tests
     @Test
-    fun testCreateProductFailure() {
+    fun `create a product with missing data and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
         val endpoint = builder.append(SERVER_URL).append("/product/create").toString()
 
@@ -95,7 +95,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun testCreateProductSuccess() {
+    fun `create a product and get 201 CREATED`() {
         builder.clear()
         val endpoint = builder.append(SERVER_URL).append("/product/create").toString()
 
@@ -130,7 +130,7 @@ class ProductControllerTest {
 
     // Update endpoints tests
     @Test
-    fun testUpdateProductPriceFailure() {
+    fun `update price of a non existing product and get 404 NOT FOUND`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -154,7 +154,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun testUpdateProductPriceSuccess() {
+    fun `update price of an existing product and get 200 OK`() {
         builder.clear()
 
         val productName = "DELL 150"
@@ -183,7 +183,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun testUpdateProductDescriptionFailure() {
+    fun `update description of a non existing product and get 404 NOT FOUND`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -207,7 +207,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun testUpdateProductDescriptionSuccess() {
+    fun `update description of an existing product and get 200 OK`() {
         builder.clear()
 
         val productName = "DELL 150"
@@ -238,7 +238,7 @@ class ProductControllerTest {
 
     // Delete endpoint test
     @Test
-    fun testDeleteNotFound() {
+    fun `delete a non existing product and get 404 NOT FOUND`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -256,7 +256,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun testDeleteSuccess() {
+    fun `delete an existing product and get 200 SUCCESS`() {
         builder.clear()
 
         val productName = "DELL 150"

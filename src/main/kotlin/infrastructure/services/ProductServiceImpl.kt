@@ -1,8 +1,10 @@
 package com.checkout.infrastructure.services
 
+import com.checkout.domain.model.Deal
 import com.checkout.domain.model.Product
 import com.checkout.domain.repository.ProductRepository
 import com.checkout.infrastructure.repository.ProductService
+import com.checkout.interfaces.dto.DealDto
 import com.checkout.interfaces.dto.ProductDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -36,23 +38,29 @@ class ProductServiceImpl(@Autowired
     }
 
 
-    fun toDto(product: Product): ProductDto {
-        return ProductDto(product.id,
-                        product.type,
-                        product.name,
-                        product.price,
-                        product.description,
-                        product.remainingQty,
-                        product.deal)
-    }
+    fun toDto(product: Product): ProductDto = ProductDto(id = product.id,
+            type = product.type,
+            name = product.name,
+            price = product.price,
+            description = product.description,
+            remainingQty = product.remainingQty,
+            deal = toDto(product.deal!!))
 
-    fun toEntity(productDto: ProductDto): Product {
-        return Product(id= productDto.id,
-                    type = productDto.type!!.toUpperCase(),
-                    name = productDto.name!!.toUpperCase(),
-                    price = productDto.price!!,
-                    description = productDto.description!!,
-                    remainingQty = productDto.remainingQty!!,
-                    deal = productDto.deal)
-    }
+    fun toEntity(productDto: ProductDto): Product = Product(id= productDto.id,
+            type = productDto.type!!.toUpperCase(),
+            name = productDto.name!!.toUpperCase(),
+            price = productDto.price!!,
+            description = productDto.description!!,
+            remainingQty = productDto.remainingQty!!,
+            deal = toEntity(productDto.deal!!))
+
+    fun toDto(deal: Deal): DealDto = DealDto(id = deal.id,
+            nbProductToBuy = deal.nbProductToBuy,
+            nbProductDiscounted = deal.nbProductDiscounted,
+            discount = deal.discount)
+
+    fun toEntity(dealDto: DealDto): Deal = Deal(id = dealDto.id,
+            nbProductToBuy = dealDto.nbProductToBuy!!,
+            nbProductDiscounted = dealDto.nbProductDiscounted!!,
+            discount = dealDto.discount!!)
 }

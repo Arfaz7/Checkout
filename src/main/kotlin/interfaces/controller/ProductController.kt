@@ -1,6 +1,5 @@
 package com.checkout.interfaces.controller
 
-import com.checkout.domain.repository.ProductRepository
 import com.checkout.infrastructure.repository.ProductService
 import com.checkout.interfaces.dto.ProductDto
 import io.swagger.annotations.Api
@@ -44,7 +43,7 @@ class ProductController(@Autowired
 
         var response : ResponseEntity<ProductDto>
         val createdProduct: ProductDto? = productService.createOrUpdateProduct(
-                ProductDto(id= productDto.id,
+                ProductDto(id = -1,
                         type = productDto.type,
                         name = productDto.name,
                         price = productDto.price,
