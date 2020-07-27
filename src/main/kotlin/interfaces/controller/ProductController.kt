@@ -40,7 +40,7 @@ class ProductController(@Autowired
     @PostMapping(value= ["/create"])
     fun createProduct(@RequestBody @ApiParam(name= "product", required = true) productDto: ProductDto): ResponseEntity<ProductDto> {
 
-        logger.info("Creating product ${productDto.name}")
+        logger.info("Creating product ${productDto}")
 
         var response : ResponseEntity<ProductDto>
         val createdProduct: ProductDto? = productService.createOrUpdateProduct(
@@ -56,7 +56,7 @@ class ProductController(@Autowired
         if (createdProduct == null)
             response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         else
-            response = ResponseEntity.status(HttpStatus.OK).body(createdProduct)
+            response = ResponseEntity.status(HttpStatus.CREATED).body(createdProduct)
 
         return response
     }
@@ -65,7 +65,7 @@ class ProductController(@Autowired
     fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
                            @RequestBody @ApiParam(name= "price", required = true) productPrice: Int): ResponseEntity<ProductDto> {
 
-        logger.info("Updating product ${productName}")
+        logger.info("Updating product ${productName} with price ${productPrice}")
 
         var response : ResponseEntity<ProductDto>
 
@@ -82,12 +82,11 @@ class ProductController(@Autowired
                     )
             )
 
-            if (updatedProduct != null) {
+            if (updatedProduct != null)
                 response = ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
-            }
-            else {
+            else
                 response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-            }
+
         }
         else {
             response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)

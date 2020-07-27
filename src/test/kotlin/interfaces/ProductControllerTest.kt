@@ -40,6 +40,7 @@ class ProductControllerTest {
         )
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(result.body).isNull()
     }
 
     @Test
@@ -86,6 +87,7 @@ class ProductControllerTest {
         )
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(result.body).isNull()
     }
 
     @Test
@@ -111,7 +113,7 @@ class ProductControllerTest {
                 ProductDto::class
         )
 
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(result.body.id).isEqualTo(2)
         assertThat(result.body.type).isEqualTo("Mouse")
         assertThat(result.body.name).isEqualTo("Razer T20")
@@ -141,6 +143,7 @@ class ProductControllerTest {
         )
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(result.body).isNull()
     }
 
     @Test
