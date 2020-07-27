@@ -1,1 +1,3 @@
-insert into product(id, type, name, price, description, remaining_qty) values(1, 'LAPTOP', 'DELL 140', 900, 'LAPTOP - DELL 140 16Go Ram', 5)
+insert into deal(id, nb_product_to_buy, nb_product_discounted, discount) values(1, 2, 1, 50)
+
+insert into product(id, type, name, price, description, remaining_qty, deal_id) values(1, 'LAPTOP', 'DELL 140', 900, 'LAPTOP - DELL 140 16Go Ram', 5, 1), (2, 'MOUSE', 'LOGITECH G35', 70, 'GAMING MOUSE', 7, null)

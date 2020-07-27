@@ -73,12 +73,14 @@ class ProductControllerTest {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
 
-        val product = ProductDto(id = 3,
+        val product = ProductDto(
+                id = -1,
                 type = null,
                 name = "Razer T20",
                 price = 50,
                 description = "Razer Gaming Mouse",
-                remainingQty = 10)
+                remainingQty = 10,
+                deal = null)
 
         val requestEntity: HttpEntity<ProductDto> = HttpEntity<ProductDto>(product, headers)
 
@@ -100,12 +102,14 @@ class ProductControllerTest {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
 
-        val product = ProductDto(id = 2,
+        val product = ProductDto(
+                id = -1,
                 type = "Mouse",
                 name = "Razer T20",
                 price = 50,
                 description = "Razer Gaming Mouse",
-                remainingQty = 10)
+                remainingQty = 10,
+                deal = null)
 
         val requestEntity: HttpEntity<ProductDto> = HttpEntity<ProductDto>(product, headers)
 

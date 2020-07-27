@@ -49,7 +49,8 @@ class ProductController(@Autowired
                         name = productDto.name,
                         price = productDto.price,
                         description = productDto.description,
-                        remainingQty = productDto.remainingQty
+                        remainingQty = productDto.remainingQty,
+                        deal = null
                 )
         )
 
@@ -78,7 +79,8 @@ class ProductController(@Autowired
                             name = product.name,
                             price = productPrice,
                             description = product.description,
-                            remainingQty = product.remainingQty
+                            remainingQty = product.remainingQty,
+                            deal = null
                     )
             )
 
@@ -112,7 +114,8 @@ class ProductController(@Autowired
                             name = product.name,
                             price = product.price,
                             description = productDescription,
-                            remainingQty = product.remainingQty
+                            remainingQty = product.remainingQty,
+                            deal = null
                     )
             )
 

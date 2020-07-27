@@ -9,7 +9,8 @@ data class Product(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) val i
                     @Column(name="name", nullable = false) val name: String,
                     @Column(name="price", nullable = false) val price: Int,
                     @Column(name="description", nullable = true) val description: String,
-                    @Column(name="remaining_qty", nullable = false) val remainingQty: Int) {
+                    @Column(name="remaining_qty", nullable = false) val remainingQty: Int,
+                    @OneToOne(fetch=FetchType.LAZY) @JoinColumn(name="DEAL_ID") val deal: Deal?) {
 
     constructor(): this(
             id=-1,
@@ -17,6 +18,7 @@ data class Product(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) val i
             name = "",
             price = 0,
             description = "",
-            remainingQty = 0
+            remainingQty = 0,
+            deal = null
     )
 }

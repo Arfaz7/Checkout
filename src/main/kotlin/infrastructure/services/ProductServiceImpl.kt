@@ -42,15 +42,17 @@ class ProductServiceImpl(@Autowired
                         product.name,
                         product.price,
                         product.description,
-                        product.remainingQty)
+                        product.remainingQty,
+                        product.deal)
     }
 
     fun toEntity(productDto: ProductDto): Product {
-        return Product(id= productDto.id!!,
+        return Product(id= productDto.id,
                     type = productDto.type!!.toUpperCase(),
                     name = productDto.name!!.toUpperCase(),
                     price = productDto.price!!,
                     description = productDto.description!!,
-                    remainingQty = productDto.remainingQty!!)
+                    remainingQty = productDto.remainingQty!!,
+                    deal = productDto.deal)
     }
 }
