@@ -4,6 +4,7 @@ import com.checkout.domain.model.Bundle
 import com.checkout.domain.model.Deal
 import com.checkout.domain.model.Product
 import com.checkout.domain.repository.BundleRepository
+import com.checkout.infrastructure.repository.ProductService
 import com.checkout.interfaces.dto.BundleDto
 import com.checkout.interfaces.dto.DealDto
 import com.checkout.interfaces.dto.ProductDto
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class BundleServiceImpl(@Autowired
-                        private val bundleRepository: BundleRepository): BundleService {
+                        private val bundleRepository: BundleRepository,
+                        @Autowired
+                        private val productService: ProductService): BundleService {
+
     override fun getBundle(productId: Long): BundleDto? =
         try {
             val bundle: Bundle = bundleRepository.findByProductId(productId)
@@ -38,13 +42,13 @@ class BundleServiceImpl(@Autowired
             false
         }
 
-    fun toEntity(bundleDto: BundleDto): Bundle = Bundle(id= bundleDto.id!!,
-            product = ProductServiceImpl.toEntity(bundleDto.product!!),
-            offeredProduct = ProductServiceImpl.toEntity(bundleDto.offeredProduct!!)
+    override fun toEntity(bundleDto: BundleDto): Bundle = Bundle(id= bundleDto.id!!,
+            product = productService.toEntity(bundleDto.product!!),
+            offeredProduct = productService.toEntity(bundleDto.offeredProduct!!)
     )
 
-    fun toDto(bundle: Bundle): BundleDto = BundleDto(id = bundle.id,
-            product = ProductServiceImpl.toDto(bundle.product!!),
-            offeredProduct = ProductServiceImpl.toDto(bundle.offeredProduct!!)
+    override fun toDto(bundle: Bundle): BundleDto = BundleDto(id = bundle.id,
+            product = productService.toDto(bundle.product!!),
+            offeredProduct = productService.toDto(bundle.offeredProduct!!)
     )
 }

@@ -12,39 +12,9 @@ import java.lang.Exception
 
 @Service
 class ProductServiceImpl(@Autowired
-                         private val productRepository: ProductRepository) : ProductService  {
-
-    companion object{
-        fun toDto(product: Product): ProductDto = ProductDto(id = product.id,
-                type = product.type,
-                name = product.name,
-                price = product.price,
-                description = product.description,
-                remainingQty = product.remainingQty,
-                deal = if(product.deal != null) toDto(product.deal) else null
-        )
-
-        fun toEntity(dealDto: DealDto): Deal = Deal(id = dealDto.id,
-                nbProductToBuy = dealDto.nbProductToBuy!!,
-                nbProductDiscounted = dealDto.nbProductDiscounted!!,
-                discount = dealDto.discount!!
-        )
-
-        fun toEntity(productDto: ProductDto): Product = Product(id= productDto.id,
-                type = productDto.type!!.toUpperCase(),
-                name = productDto.name!!.toUpperCase(),
-                price = productDto.price!!,
-                description = productDto.description!!,
-                remainingQty = productDto.remainingQty!!,
-                deal = if(productDto.deal != null) toEntity(productDto.deal) else null
-        )
-
-        fun toDto(deal: Deal): DealDto = DealDto(id = deal.id,
-                nbProductToBuy = deal.nbProductToBuy,
-                nbProductDiscounted = deal.nbProductDiscounted,
-                discount = deal.discount
-        )
-    }
+                         private val productRepository: ProductRepository,
+                         @Autowired
+                         private val dealService: DealService) : ProductService  {
 
     override fun getProduct(name: String): ProductDto? {
         val product : Product = productRepository.findByName(name)
@@ -68,4 +38,23 @@ class ProductServiceImpl(@Autowired
             false
         }
     }
+
+    override fun toDto(product: Product): ProductDto = ProductDto(id = product.id,
+            type = product.type,
+            name = product.name,
+            price = product.price,
+            description = product.description,
+            remainingQty = product.remainingQty,
+            deal = if(product.deal != null) dealService.toDto(product.deal) else null
+    )
+
+    override fun toEntity(productDto: ProductDto)= Product (
+            id = productDto.id,
+            type = productDto.type!!.toUpperCase(),
+            name = productDto.name!!.toUpperCase(),
+            price = productDto.price!!,
+            description = productDto.description!!,
+            remainingQty = productDto.remainingQty!!,
+            deal = if(productDto.deal != null) dealService.toEntity(productDto.deal) else null
+    )
 }

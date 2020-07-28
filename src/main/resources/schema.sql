@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS BASKET;
 DROP TABLE IF EXISTS BUNDLE;
 DROP TABLE IF EXISTS PRODUCT;
 DROP TABLE IF EXISTS DEAL;
@@ -26,4 +27,11 @@ CREATE TABLE BUNDLE (
     foreign key (product_id) references PRODUCT(id),
     offered_product_id INT NOT NULL,
     foreign key (offered_product_id) references PRODUCT(id)
+);
+
+CREATE TABLE BASKET (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quantity INT NOT NULL,
+    product_id INT NOT NULL,
+    foreign key (product_id) references PRODUCT(id)
 );

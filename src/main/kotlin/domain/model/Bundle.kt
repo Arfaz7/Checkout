@@ -1,5 +1,6 @@
 package com.checkout.domain.model
 
+import com.checkout.interfaces.dto.BundleDto
 import javax.persistence.*
 
 @Entity
