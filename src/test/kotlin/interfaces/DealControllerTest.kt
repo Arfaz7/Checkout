@@ -58,7 +58,7 @@ class DealControllerTest {
     }
 
     @Test
-    fun `create a new deal for a non existing product and get 404 NOT FOUND`() {
+    fun `create a new deal for a non existing product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -82,7 +82,7 @@ class DealControllerTest {
                 ProductDto::class
         )
 
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(result.body).isNull()
     }
 
@@ -119,7 +119,7 @@ class DealControllerTest {
 
     // Deletion tests
     @Test
-    fun `delete a deal for a non existing product and get 404 NOT FOUND`() {
+    fun `delete a deal for a non existing product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 310"
@@ -132,8 +132,8 @@ class DealControllerTest {
                 String::class
         )
 
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        Assertions.assertThat(result.body).isEqualTo("ERROR PRODUCT NOT FOUND")
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        Assertions.assertThat(result.body).isEqualTo("ERROR")
     }
 
     @Test
@@ -151,7 +151,7 @@ class DealControllerTest {
         )
 
         Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(result.body).isEqualTo("NO DEAL IN THIS PRODUCT")
+        Assertions.assertThat(result.body).isEqualTo("ERROR")
     }
 
     @Test

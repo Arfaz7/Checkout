@@ -29,35 +29,16 @@ class DealController(@Autowired
 
         logger.info("Creating deal ${dealDto} for product : ${productName}")
 
-        var response : ResponseEntity<ProductDto>
-        val product = productService.getProduct(productName)
-        val deal = DealDto(
-                        id= -1,
-                        nbProductDiscounted = dealDto.nbProductDiscounted,
-                        nbProductToBuy = dealDto.nbProductToBuy,
-                        discount = dealDto.discount)
+        return try {
+            val product = productService.getProduct(productName)
+            val deal = dealDto.copy(id = -1)
+            val updatedProduct = productService.createOrUpdateProduct(product!!.copy(deal = deal))
+            ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct)
 
-        if (product == null)
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        else {
-
-            val updatedProduct = productService.createOrUpdateProduct(ProductDto(
-                    id = product.id,
-                    type = product.type,
-                    name = product.name,
-                    price = product.price,
-                    description = product.description,
-                    remainingQty = product.remainingQty,
-                    deal = deal)
-            )
-
-            if (updatedProduct == null)
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-            else
-                response = ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
-
-        return response
     }
 
     @DeleteMapping(value= ["/delete"])
@@ -65,30 +46,15 @@ class DealController(@Autowired
 
         logger.info("Deleting deal from product : ${productName}")
 
-        var response : ResponseEntity<String>
-        val product = productService.getProduct(productName)
+        return try {
+            val product = productService.getProduct(productName)
+            val updatedProduct = productService.createOrUpdateProduct(product!!.copy(deal = null))
+            dealService.deleteDeal(product.deal!!.id!!)
+            ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
 
-        if (product == null)
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR PRODUCT NOT FOUND")
-        else {
-            val productWithoutDeal = ProductDto(
-                    id = product.id,
-                    type = product.type,
-                    name = product.name,
-                    price = product.price,
-                    description = product.description,
-                    remainingQty = product.remainingQty,
-                    deal = null
-            )
-            val updatedProduct = productService.createOrUpdateProduct(productWithoutDeal)
-            val result = if(product.deal != null) dealService.deleteDeal(product.deal.id!!) else false
-
-            if (result == false)
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("NO DEAL IN THIS PRODUCT")
-            else
-                response = ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR")
         }
-
-        return response
     }
 }

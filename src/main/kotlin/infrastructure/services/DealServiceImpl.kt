@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service
 class DealServiceImpl(@Autowired
                          private val dealRepository: DealRepository) : DealService {
 
-    override fun deleteDeal(dealId: Long): Boolean {
-        dealRepository.deleteById(dealId)
-        return true
-    }
+    override fun deleteDeal(dealId: Long)= dealRepository.deleteById(dealId)
 
     override fun toDto(deal: Deal)= DealDto (
             id = deal.id,
