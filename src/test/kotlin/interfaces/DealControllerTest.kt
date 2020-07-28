@@ -9,6 +9,7 @@ import org.junit.runner.RunWith
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
@@ -26,6 +27,7 @@ class DealControllerTest {
     private var SERVER_URL = "http://localhost:8080/api/v1"
     private val restTemplate: TestRestTemplate = TestRestTemplate()
 
+    // Creation tests
     @Test
     fun `create a new deal with missing data and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
@@ -113,5 +115,60 @@ class DealControllerTest {
         Assertions.assertThat(result.body.deal!!.nbProductToBuy).isEqualTo(1)
         Assertions.assertThat(result.body.deal!!.nbProductDiscounted).isEqualTo(1)
         Assertions.assertThat(result.body.deal!!.discount).isEqualTo(50.0)
+    }
+
+    // Deletion tests
+    @Test
+    fun `delete a deal for a non existing product and get 404 NOT FOUND`() {
+        builder.clear()
+
+        val productName = "DELL 310"
+        val endpoint = builder.append(SERVER_URL).append("/deal/delete?productName=").append(productName).toString()
+
+        val result : ResponseEntity<String> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.DELETE,
+                null,
+                String::class
+        )
+
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.body).isEqualTo("ERROR PRODUCT NOT FOUND")
+    }
+
+    @Test
+    fun `delete a deal for an existing product without deal and get 500 INTERNAL SERVER ERROR`() {
+        builder.clear()
+
+        val productName = "LOGITECH G35"
+        val endpoint = builder.append(SERVER_URL).append("/deal/delete?productName=").append(productName).toString()
+
+        val result : ResponseEntity<String> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.DELETE,
+                null,
+                String::class
+        )
+
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        Assertions.assertThat(result.body).isEqualTo("NO DEAL IN THIS PRODUCT")
+    }
+
+    @Test
+    fun `delete a deal for an existing product and get 200 OK`() {
+        builder.clear()
+
+        val productName = "DELL 150"
+        val endpoint = builder.append(SERVER_URL).append("/deal/delete?productName=").append(productName).toString()
+
+        val result : ResponseEntity<String> = restTemplate.exchange(
+                endpoint,
+                HttpMethod.DELETE,
+                null,
+                String::class
+        )
+
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(result.body).isEqualTo("SUCCESS")
     }
 }

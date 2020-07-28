@@ -1,0 +1,9 @@
+package com.checkout.infrastructure.services
+
+import com.checkout.interfaces.dto.BundleDto
+
+interface BundleService {
+    fun getBundle(productId: Long): BundleDto?
+    fun createOrUpdateProduct(bundleDto: BundleDto): BundleDto?
+    fun deleteBundle(bundleId: Long): Boolean
+}

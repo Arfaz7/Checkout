@@ -22,8 +22,8 @@ CREATE TABLE PRODUCT (
 
 CREATE TABLE BUNDLE (
     id INT AUTO_INCREMENT  PRIMARY KEY,
-    id_product INT NOT NULL,
-    foreign key (id_product) references PRODUCT(id),
-    id_offered_product INT NOT NULL,
-    foreign key (id_offered_product) references PRODUCT(id)
+    product_id INT NOT NULL,
+    foreign key (product_id) references PRODUCT(id),
+    offered_product_id INT NOT NULL,
+    foreign key (offered_product_id) references PRODUCT(id)
 );
