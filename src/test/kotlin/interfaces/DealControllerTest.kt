@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner
 class DealControllerTest {
 
     private val builder = StringBuilder()
-    private var SERVER_URL = "http://localhost:8080/api/v1"
+    private val SERVER_URL = "http://localhost:8080/api/v1"
     private val restTemplate: TestRestTemplate = TestRestTemplate()
 
     // Creation tests

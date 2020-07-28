@@ -1,8 +1,6 @@
 package com.checkout.infrastructure.repository
 
-import com.checkout.domain.model.Bundle
 import com.checkout.domain.model.Product
-import com.checkout.interfaces.dto.BundleDto
 import com.checkout.interfaces.dto.ProductDto
 
 interface ProductService {

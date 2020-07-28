@@ -21,16 +21,15 @@ import org.springframework.test.context.junit4.SpringRunner
 @AutoConfigureWebMvc
 @ActiveProfiles(value = ["test"])
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:/schema.sql", "classpath:/data.sql"])
-
 class BundleControllerTest {
 
     private val builder = StringBuilder()
-    private var SERVER_URL = "http://localhost:8080/api/v1"
+    private val SERVER_URL = "http://localhost:8080/api/v1"
     private val restTemplate: TestRestTemplate = TestRestTemplate()
 
     // Get tests
     @Test
-    fun `get an existing bundle and get 201 CREATED`() {
+    fun `get an existing bundle and get 200 OK`() {
         builder.clear()
 
         val productName = "DELL 150"

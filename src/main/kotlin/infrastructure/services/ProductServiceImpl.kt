@@ -1,14 +1,11 @@
 package com.checkout.infrastructure.services
 
-import com.checkout.domain.model.Deal
 import com.checkout.domain.model.Product
 import com.checkout.domain.repository.ProductRepository
 import com.checkout.infrastructure.repository.ProductService
-import com.checkout.interfaces.dto.DealDto
 import com.checkout.interfaces.dto.ProductDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.lang.Exception
 
 @Service
 class ProductServiceImpl(@Autowired
@@ -18,25 +15,17 @@ class ProductServiceImpl(@Autowired
 
     override fun getProduct(name: String): ProductDto? {
         val product : Product = productRepository.findByName(name)
-        return if(product != null) toDto(product) else product
+        return if(product != null) toDto(product) else null
     }
 
-    override fun createOrUpdateProduct(productDto: ProductDto): ProductDto? {
-        return try {
-            val product: Product = productRepository.save(toEntity(productDto))
-            toDto(product)
-        }catch(ex: Exception) {
-            null
-        }
+    override fun createOrUpdateProduct(productDto: ProductDto): ProductDto?{
+        val product: Product = productRepository.save(toEntity(productDto))
+        return toDto(product)
     }
 
     override fun deleteProduct(productDto: ProductDto): Boolean {
-        return try {
-            productRepository.delete(toEntity(productDto))
-            true
-        } catch (ex: Exception) {
-            false
-        }
+        productRepository.delete(toEntity(productDto))
+        return true
     }
 
     override fun toDto(product: Product): ProductDto = ProductDto(id = product.id,
