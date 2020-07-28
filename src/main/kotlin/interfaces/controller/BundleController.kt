@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.lang.Exception
 
 @RestController
 @RequestMapping(value = ["/api/v1/bundle"])
@@ -29,21 +30,19 @@ class BundleController(@Autowired
 
         logger.info("Get bundle for product : ${productName}")
 
-        var response: ResponseEntity<BundleDto>
-        val product = productService.getProduct(productName)
-
-        if (product != null) {
-            val existingBundle = bundleService.getBundle(productId = product.id!!)
+        return try {
+            val product = productService.getProduct(productName)
+            val existingBundle = bundleService.getBundle(productId = product!!.id!!)
 
             if (existingBundle != null)
-                response = ResponseEntity.status(HttpStatus.OK).body(existingBundle)
+                ResponseEntity.status(HttpStatus.OK).body(existingBundle)
             else
-                response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
 
-        return response
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
     }
 
     @PostMapping(value= ["/create"])
@@ -52,12 +51,11 @@ class BundleController(@Autowired
 
         logger.info("Creating bundle for products : ${productName} & ${offeredProductName}")
 
-        var response : ResponseEntity<BundleDto>
-        val product = productService.getProduct(productName)
-        val offeredProduct = productService.getProduct(offeredProductName)
+        return try {
+            val product = productService.getProduct(productName)
+            val offeredProduct = productService.getProduct(offeredProductName)
 
-        if (product != null && offeredProduct != null) {
-            val existingBundle = bundleService.getBundle(productId = product.id!!)
+            val existingBundle = bundleService.getBundle(productId = product!!.id!!)
 
             if(existingBundle != null) {
                 bundleService.deleteBundle(existingBundle.id!!)
@@ -68,17 +66,11 @@ class BundleController(@Autowired
                     offeredProduct = offeredProduct)
 
             val createdBundle = bundleService.createOrUpdateProduct(bundle)
-
-            if (createdBundle == null)
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-            else
-                response = ResponseEntity.status(HttpStatus.CREATED).body(createdBundle)
+            ResponseEntity.status(HttpStatus.CREATED).body(createdBundle)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
-        else {
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
-
-        return response
     }
 
     @DeleteMapping(value= ["/delete"])
@@ -86,26 +78,15 @@ class BundleController(@Autowired
 
         logger.info("Get bundle for product : ${productName}")
 
-        var response: ResponseEntity<String>
-        val product = productService.getProduct(productName)
+        return try {
+            val product = productService.getProduct(productName)
+            val existingBundle = bundleService.getBundle(productId = product!!.id!!)
+            bundleService.deleteBundle(existingBundle!!.id!!)
+            ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
 
-        if (product != null) {
-            val existingBundle = bundleService.getBundle(productId = product.id!!)
-
-            if (existingBundle != null) {
-                val result = bundleService.deleteBundle(existingBundle.id!!)
-
-                if(result)
-                    response = ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
-                else
-                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR DURING BUNDLE DELETION")
-            }
-            else
-                response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("BUNDLE NOT FOUND FOR PRODUCT: ${productName}")
+        } catch (ex: Exception){
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR DURING BUNDLE DELETION FOR ${productName}")
         }
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("PRODUCT ${productName} NOT FOUND")
-
-        return response
     }
 }

@@ -28,13 +28,7 @@ class BasketController(@Autowired
 
         var response: ResponseEntity<List<BasketProductDto>>
         val basketProducts = basketService.getAllBasketProducts()
-
-        if (!basketProducts.isNullOrEmpty())
-            response = ResponseEntity.status(HttpStatus.OK).body(basketProducts)
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-
-        return response
+        return ResponseEntity.status(HttpStatus.OK).body(basketProducts)
     }
 
     @PostMapping(value = ["/add"])
@@ -70,22 +64,16 @@ class BasketController(@Autowired
 
         logger.info("Update product qty : ${productName}")
 
-        var response: ResponseEntity<BasketProductDto>
-        val product = productService.getProduct(productName)
+        return try {
+            val product = productService.getProduct(productName)
+            val basketProduct = basketService.getBasketProductByProductId(product!!.id!!)
+            val updatedBasketProduct = basketService.addOrUpdateBasketProduct(basketProduct!!.copy(quantity = quantity))
+            ResponseEntity.status(HttpStatus.OK).body(updatedBasketProduct)
 
-        if (product != null) {
-            val basketProduct = basketService.getBasketProductByProductId(product.id!!)
-
-            if(basketProduct != null) {
-                val updatedBasketProduct = basketService.addOrUpdateBasketProduct(basketProduct.copy(quantity = quantity))
-                response = ResponseEntity.status(HttpStatus.OK).body(updatedBasketProduct)
-            } else
-                response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         }
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-
-        return response
     }
 
     @DeleteMapping(value = ["/remove"])
@@ -93,26 +81,16 @@ class BasketController(@Autowired
 
         logger.info("Remove product from basket : ${productName}")
 
-        var response: ResponseEntity<String>
-        val product = productService.getProduct(productName)
+        return try {
+            val product = productService.getProduct(productName)
+            val basketProduct = basketService.getBasketProductByProductId(product!!.id!!)
+            basketService.removeBasketProduct(basketProduct!!)
 
-        if (product != null) {
-            val basketProduct = basketService.getBasketProductByProductId(productId = product.id!!)
-
-            if(basketProduct != null){
-                val result = basketService.removeBasketProduct(basketProduct)
-                if(result)
-                    response = ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
-                else
-                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR WHILE REMOVING PRODUCT FROM BASKET")
-            }
-            else
-                response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("PRODUCT NOT FOUND IN THE BASKET")
+            ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR")
         }
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("PRODUCT NOT FOUND")
-
-        return response
     }
 
    /* @GetMapping(value = ["/total"])

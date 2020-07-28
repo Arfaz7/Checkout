@@ -138,7 +138,7 @@ class BasketProductControllerTest {
     }
 
     @Test
-    fun `remove a product which is not in the basket and get a 404 NOT FOUND`() {
+    fun `remove a product which is not in the basket and get a 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "LOGITECH G35"
@@ -151,12 +151,11 @@ class BasketProductControllerTest {
                 String::class
         )
 
-
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Test
-    fun `remove a non existing product get a 404 NOT FOUND`() {
+    fun `remove a non existing product get a 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 870"
@@ -169,8 +168,7 @@ class BasketProductControllerTest {
                 String::class
         )
 
-
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
 }

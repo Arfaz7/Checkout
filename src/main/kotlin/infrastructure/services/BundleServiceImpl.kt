@@ -25,10 +25,8 @@ class BundleServiceImpl(@Autowired
         return toDto(bundle)
     }
 
-    override fun deleteBundle(bundleId: Long): Boolean {
-        bundleRepository.deleteById(bundleId)
-        return true
-    }
+    override fun deleteBundle(bundleId: Long) = bundleRepository.deleteById(bundleId)
+
 
     override fun toEntity(bundleDto: BundleDto): Bundle = Bundle(id= bundleDto.id!!,
             product = productService.toEntity(bundleDto.product!!),

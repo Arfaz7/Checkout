@@ -24,13 +24,10 @@ class BasketServiceImpl(@Autowired
 
     override fun getBasketProductByProductId(productId: Long): BasketProductDto? {
         val basketProduct : BasketProduct = basketRepository.findByProductId(productId)
-        return if(basketProduct != null) toDto(basketProduct) else null
+        return toDto(basketProduct)
     }
 
-    override fun removeBasketProduct(basketProductDto: BasketProductDto): Boolean {
-            basketRepository.delete(toEntity(basketProductDto))
-            return true
-    }
+    override fun removeBasketProduct(basketProductDto: BasketProductDto) = basketRepository.delete(toEntity(basketProductDto))
 
     override fun toDto(basketProduct: BasketProduct): BasketProductDto = BasketProductDto(
             id = basketProduct.id!!,

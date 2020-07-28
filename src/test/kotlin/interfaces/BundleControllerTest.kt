@@ -46,7 +46,7 @@ class BundleControllerTest {
     }
 
     @Test
-    fun `get a non existing bundle get 404 NOT FOUND`() {
+    fun `get a non existing bundle get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -57,12 +57,12 @@ class BundleControllerTest {
                 BundleDto::class
         )
 
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(result.body).isNull()
     }
 
     @Test
-    fun `get a bundle from a non existing product and get 404 NOT FOUND`() {
+    fun `get a bundle from a non existing product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -73,7 +73,7 @@ class BundleControllerTest {
                 BundleDto::class
         )
 
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(result.body).isNull()
     }
 
@@ -102,7 +102,7 @@ class BundleControllerTest {
     }
 
     @Test
-    fun `create a new bundle with non existing product and get 404 NOT FOUND`() {
+    fun `create a new bundle with non existing product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -120,12 +120,12 @@ class BundleControllerTest {
                 BundleDto::class
         )
 
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(result.body).isNull()
     }
 
     @Test
-    fun `create a new bundle with non existing offered product and get 404 NOT FOUND`() {
+    fun `create a new bundle with non existing offered product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 150"
@@ -143,7 +143,7 @@ class BundleControllerTest {
                 BundleDto::class
         )
 
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(result.body).isNull()
     }
 
@@ -181,7 +181,7 @@ class BundleControllerTest {
         )
 
         Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        Assertions.assertThat(result.body).isEqualTo("PRODUCT ${productName} NOT FOUND")
+        Assertions.assertThat(result.body).isEqualTo("ERROR DURING BUNDLE DELETION FOR ${productName}")
     }
 
     @Test
@@ -199,6 +199,6 @@ class BundleControllerTest {
         )
 
         Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        Assertions.assertThat(result.body).isEqualTo("BUNDLE NOT FOUND FOR PRODUCT: ${productName}")
+        Assertions.assertThat(result.body).isEqualTo("ERROR DURING BUNDLE DELETION FOR ${productName}")
     }
 }
