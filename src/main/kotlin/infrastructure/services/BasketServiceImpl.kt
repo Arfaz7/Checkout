@@ -17,12 +17,12 @@ class BasketServiceImpl(@Autowired
             .map { basketProduct -> toDto(basketProduct) }
 
 
-    override fun addOrUpdateBasketProduct(basketProductDto: BasketProductDto): BasketProductDto? {
+    override fun addOrUpdateBasketProduct(basketProductDto: BasketProductDto): BasketProductDto {
         val basketProduct: BasketProduct = basketRepository.save(toEntity(basketProductDto))
         return toDto(basketProduct)
     }
 
-    override fun getBasketProductByProductId(productId: Long): BasketProductDto? {
+    override fun getBasketProductByProductId(productId: Long): BasketProductDto {
         val basketProduct : BasketProduct = basketRepository.findByProductId(productId)
         return toDto(basketProduct)
     }

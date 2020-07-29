@@ -32,7 +32,7 @@ class DealController(@Autowired
         return try {
             val product = productService.getProduct(productName.toUpperCase())
             val deal = dealDto.copy(id = -1)
-            val updatedProduct = productService.createOrUpdateProduct(product!!.copy(deal = deal))
+            val updatedProduct = productService.createOrUpdateProduct(product.copy(deal = deal))
             ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct)
 
         } catch (ex: Exception) {
@@ -48,7 +48,7 @@ class DealController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val updatedProduct = productService.createOrUpdateProduct(product!!.copy(deal = null))
+            productService.createOrUpdateProduct(product.copy(deal = null))
             dealService.deleteDeal(product.deal!!.id!!)
             ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
 

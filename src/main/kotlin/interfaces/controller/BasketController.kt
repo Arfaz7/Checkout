@@ -63,8 +63,8 @@ class BasketController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val basketProduct = basketService.getBasketProductByProductId(product!!.id!!)
-            val updatedBasketProduct = basketService.addOrUpdateBasketProduct(basketProduct!!.copy(quantity = quantity))
+            val basketProduct = basketService.getBasketProductByProductId(product.id!!)
+            val updatedBasketProduct = basketService.addOrUpdateBasketProduct(basketProduct.copy(quantity = quantity))
             ResponseEntity.status(HttpStatus.OK).body(updatedBasketProduct)
 
         } catch (ex: Exception) {
@@ -80,8 +80,8 @@ class BasketController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val basketProduct = basketService.getBasketProductByProductId(product!!.id!!)
-            basketService.removeBasketProduct(basketProduct!!)
+            val basketProduct = basketService.getBasketProductByProductId(product.id!!)
+            basketService.removeBasketProduct(basketProduct)
 
             ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
         } catch (ex: Exception) {

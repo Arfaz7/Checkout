@@ -62,7 +62,7 @@ class ProductController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val updatedProduct: ProductDto = productService.createOrUpdateProduct(product!!.copy(price = productPrice))
+            val updatedProduct: ProductDto? = try{productService.createOrUpdateProduct(product.copy(price = productPrice))} catch(ex: Exception){null}
 
             if (updatedProduct != null) ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
             else ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
@@ -81,7 +81,7 @@ class ProductController(@Autowired
         return try {
             val product = productService.getProduct(productName.toUpperCase())
 
-            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product!!.copy(description = productDescription))
+            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product.copy(description = productDescription))
             ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
         } catch (ex: Exception) {
             logger.error(ex.localizedMessage)
@@ -99,7 +99,7 @@ class ProductController(@Autowired
             val product = productService.getProduct(productName.toUpperCase())
 
             // Remove product from basket
-            val basket = basketService.getBasketProductByProductId(product!!.id!!)
+            val basket = try{basketService.getBasketProductByProductId(product.id!!)} catch(ex: Exception){null}
             if (basket != null) basketService.removeBasketProduct(basket)
 
             // Delete product bundle

@@ -13,7 +13,7 @@ class BundleServiceImpl(@Autowired
                         @Autowired
                         private val productService: ProductService): BundleService {
 
-    override fun getBundle(productId: Long): BundleDto? {
+    override fun getBundle(productId: Long): BundleDto {
         val bundle: Bundle = bundleRepository.findByProductId(productId)
         return toDto(bundle)
     }

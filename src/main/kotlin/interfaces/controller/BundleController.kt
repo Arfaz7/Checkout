@@ -32,12 +32,8 @@ class BundleController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val existingBundle = bundleService.getBundle(productId = product!!.id!!)
-
-            if (existingBundle != null)
-                ResponseEntity.status(HttpStatus.OK).body(existingBundle)
-            else
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+            val existingBundle = bundleService.getBundle(productId = product.id!!)
+            ResponseEntity.status(HttpStatus.OK).body(existingBundle)
 
         } catch (ex: Exception) {
             logger.error(ex.localizedMessage)
@@ -55,7 +51,7 @@ class BundleController(@Autowired
             val product = productService.getProduct(productName.toUpperCase())
             val offeredProduct = productService.getProduct(offeredProductName.toUpperCase())
 
-            val existingBundle = bundleService.getBundle(productId = product!!.id!!)
+            val existingBundle = try{bundleService.getBundle(productId = product.id!!)} catch(ex: Exception){null}
 
             if(existingBundle != null) {
                 bundleService.deleteBundle(existingBundle.id!!)
@@ -80,7 +76,7 @@ class BundleController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val existingBundle = bundleService.getBundle(productId = product!!.id!!)
+            val existingBundle = bundleService.getBundle(productId = product.id!!)
             bundleService.deleteBundle(existingBundle!!.id!!)
             ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
 
