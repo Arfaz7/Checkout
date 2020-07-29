@@ -28,10 +28,10 @@ class BundleController(@Autowired
     @GetMapping(value = ["/get"])
     fun getBundle(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<BundleDto> {
 
-        logger.info("Get bundle for product : ${productName}")
+        logger.info("Get bundle for product : ${productName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val existingBundle = bundleService.getBundle(productId = product!!.id!!)
 
             if (existingBundle != null)
@@ -49,11 +49,11 @@ class BundleController(@Autowired
     fun createBundle(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
                    @RequestParam @ApiParam(name= "offeredProductName", required = true) offeredProductName: String): ResponseEntity<BundleDto> {
 
-        logger.info("Creating bundle for products : ${productName} & ${offeredProductName}")
+        logger.info("Creating bundle for products : ${productName.toUpperCase()} & ${offeredProductName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
-            val offeredProduct = productService.getProduct(offeredProductName)
+            val product = productService.getProduct(productName.toUpperCase())
+            val offeredProduct = productService.getProduct(offeredProductName.toUpperCase())
 
             val existingBundle = bundleService.getBundle(productId = product!!.id!!)
 
@@ -76,17 +76,17 @@ class BundleController(@Autowired
     @DeleteMapping(value= ["/delete"])
     fun deleteDeal(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<String> {
 
-        logger.info("Get bundle for product : ${productName}")
+        logger.info("Get bundle for product : ${productName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val existingBundle = bundleService.getBundle(productId = product!!.id!!)
             bundleService.deleteBundle(existingBundle!!.id!!)
             ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
 
         } catch (ex: Exception){
             logger.error(ex.localizedMessage)
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR DURING BUNDLE DELETION FOR ${productName}")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR DURING BUNDLE DELETION FOR ${productName.toUpperCase()}")
         }
     }
 }

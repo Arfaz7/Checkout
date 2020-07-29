@@ -27,10 +27,10 @@ class DealController(@Autowired
     fun createDeal(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
                       @RequestBody @ApiParam(name= "deal", required = true) dealDto: DealDto): ResponseEntity<ProductDto> {
 
-        logger.info("Creating deal ${dealDto} for product : ${productName}")
+        logger.info("Creating deal ${dealDto} for product : ${productName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val deal = dealDto.copy(id = -1)
             val updatedProduct = productService.createOrUpdateProduct(product!!.copy(deal = deal))
             ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct)
@@ -44,10 +44,10 @@ class DealController(@Autowired
     @DeleteMapping(value= ["/delete"])
     fun deleteDeal(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<String> {
 
-        logger.info("Deleting deal from product : ${productName}")
+        logger.info("Deleting deal from product : ${productName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val updatedProduct = productService.createOrUpdateProduct(product!!.copy(deal = null))
             dealService.deleteDeal(product.deal!!.id!!)
             ResponseEntity.status(HttpStatus.OK).body("SUCCESS")

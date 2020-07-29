@@ -29,10 +29,10 @@ class ProductController(@Autowired
                        @ApiParam(name= "productName", required = true)
                        productName: String): ResponseEntity<ProductDto> {
 
-        logger.info("Getting product: ${productName}")
+        logger.info("Getting product: ${productName.toUpperCase()}")
 
         return try{
-            val result = productService.getProduct(productName)
+            val result = productService.getProduct(productName.toUpperCase())
             ResponseEntity.status(HttpStatus.OK).body(result)
         } catch (ex: Exception) {
             logger.error(ex.localizedMessage)
@@ -58,10 +58,10 @@ class ProductController(@Autowired
     fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
                            @RequestBody @ApiParam(name= "price", required = true) productPrice: Int): ResponseEntity<ProductDto> {
 
-        logger.info("Updating product ${productName} with price ${productPrice}")
+        logger.info("Updating product ${productName.toUpperCase()} with price ${productPrice}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product!!.copy(price = productPrice))
 
             if (updatedProduct != null) ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
@@ -76,10 +76,10 @@ class ProductController(@Autowired
     fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
                            @RequestBody @ApiParam(name= "description", required = true) productDescription: String): ResponseEntity<ProductDto> {
 
-        logger.info("Updating product ${productName} description")
+        logger.info("Updating product ${productName.toUpperCase()} description")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
 
             val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product!!.copy(description = productDescription))
             ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
@@ -93,10 +93,10 @@ class ProductController(@Autowired
     @DeleteMapping(value= ["/delete"])
     fun updateProductPrice(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<String> {
 
-        logger.info("Updating product ${productName} description")
+        logger.info("Updating product ${productName.toUpperCase()} description")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
 
             // Remove product from basket
             val basket = basketService.getBasketProductByProductId(product!!.id!!)

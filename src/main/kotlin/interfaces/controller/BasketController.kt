@@ -33,10 +33,10 @@ class BasketController(@Autowired
     @PostMapping(value = ["/add"])
     fun addProduct(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<BasketProductDto> {
 
-        logger.info("Add product : ${productName} to basket")
+        logger.info("Add product : ${productName.toUpperCase()} to basket")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
 
             val basketProduct = BasketProductDto(
                     id = -1,
@@ -56,10 +56,10 @@ class BasketController(@Autowired
     fun updateProductQuantity(@RequestParam @ApiParam(name= "productName", required = true) productName: String,
                               @RequestParam @ApiParam(name= "quantity", required = true) quantity: Int): ResponseEntity<BasketProductDto> {
 
-        logger.info("Update product qty : ${productName}")
+        logger.info("Update product qty : ${productName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val basketProduct = basketService.getBasketProductByProductId(product!!.id!!)
             val updatedBasketProduct = basketService.addOrUpdateBasketProduct(basketProduct!!.copy(quantity = quantity))
             ResponseEntity.status(HttpStatus.OK).body(updatedBasketProduct)
@@ -73,10 +73,10 @@ class BasketController(@Autowired
     @DeleteMapping(value = ["/remove"])
     fun removeProduct(@RequestParam @ApiParam(name= "productName", required = true) productName: String): ResponseEntity<String> {
 
-        logger.info("Remove product from basket : ${productName}")
+        logger.info("Remove product from basket : ${productName.toUpperCase()}")
 
         return try {
-            val product = productService.getProduct(productName)
+            val product = productService.getProduct(productName.toUpperCase())
             val basketProduct = basketService.getBasketProductByProductId(product!!.id!!)
             basketService.removeBasketProduct(basketProduct!!)
 
