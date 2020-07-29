@@ -20,7 +20,7 @@ class BundleServiceImpl(@Autowired
 
 
 
-    override fun createOrUpdateProduct(bundleDto: BundleDto): BundleDto? {
+    override fun createOrUpdateProduct(bundleDto: BundleDto): BundleDto {
         val bundle: Bundle = bundleRepository.save(toEntity(bundleDto))
         return toDto(bundle)
     }

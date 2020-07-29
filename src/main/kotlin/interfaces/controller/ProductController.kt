@@ -46,7 +46,7 @@ class ProductController(@Autowired
         logger.info("Creating product ${productDto}")
 
         return try {
-            val createdProduct: ProductDto? = productService.createOrUpdateProduct(productDto.copy(id = -1, deal = null))
+            val createdProduct: ProductDto = productService.createOrUpdateProduct(productDto.copy(id = -1, deal = null))
             ResponseEntity.status(HttpStatus.CREATED).body(createdProduct)
         } catch (ex: Exception) {
             logger.error(ex.localizedMessage)
@@ -62,7 +62,7 @@ class ProductController(@Autowired
 
         return try {
             val product = productService.getProduct(productName.toUpperCase())
-            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product!!.copy(price = productPrice))
+            val updatedProduct: ProductDto = productService.createOrUpdateProduct(product!!.copy(price = productPrice))
 
             if (updatedProduct != null) ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
             else ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)

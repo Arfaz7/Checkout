@@ -13,12 +13,12 @@ class ProductServiceImpl(@Autowired
                          @Autowired
                          private val dealService: DealService) : ProductService  {
 
-    override fun getProduct(name: String): ProductDto? {
+    override fun getProduct(name: String): ProductDto {
         val product : Product = productRepository.findByName(name)
         return toDto(product)
     }
 
-    override fun createOrUpdateProduct(productDto: ProductDto): ProductDto?{
+    override fun createOrUpdateProduct(productDto: ProductDto): ProductDto{
         val product: Product = productRepository.save(toEntity(productDto))
         return toDto(product)
     }
@@ -26,7 +26,7 @@ class ProductServiceImpl(@Autowired
     override fun deleteProduct(productDto: ProductDto) = productRepository.delete(toEntity(productDto))
 
 
-    override fun toDto(product: Product): ProductDto = ProductDto(id = product.id,
+    override fun toDto(product: Product): ProductDto = ProductDto(id = product.id!!,
             type = product.type,
             name = product.name,
             price = product.price,
