@@ -2,6 +2,7 @@ package com.checkout.interfaces.controller
 
 import com.checkout.infrastructure.repository.ProductService
 import com.checkout.infrastructure.services.BasketService
+import com.checkout.infrastructure.services.BundleService
 import com.checkout.interfaces.dto.BasketProductDto
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiParam
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.*
 class BasketController(@Autowired
                        val basketService: BasketService,
                        @Autowired
-                       val productService: ProductService) {
+                       val productService: ProductService,
+                       @Autowired
+                       val bundleService: BundleService) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -87,20 +90,50 @@ class BasketController(@Autowired
         }
     }
 
-   /* @GetMapping(value = ["/total"])
-    fun getBasketTotalPrice(): ResponseEntity<BasketDto> {
+    @GetMapping(value = ["/total"])
+    fun getBasketTotalPrice(): ResponseEntity<Double> {
 
-        logger.info("Get basket : ${basketId}")
+        logger.info("Get basket total price")
 
-        var response: ResponseEntity<BasketDto>
-        val basket = basketService.getBasket(basketId)
+        return try {
+            val basketProducts = basketService.getAllBasketProducts()
 
-        if (basket != null)
-            response = ResponseEntity.status(HttpStatus.OK).body(basket)
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+            var totalPrice = .0
+            basketProducts!!.forEach {
 
-        return response
-    }*/
+                // Handling deals
+                if (it.product!!.deal != null && it.quantity >= it.product.deal!!.nbProductToBuy!!) {
+                    // Add discounted price
+                    val nbDiscountedProduct: Int = (it.quantity.div(it.product.deal.nbProductToBuy!!)).times(it.product.deal.nbProductDiscounted!!)
+                    totalPrice = totalPrice.plus(nbDiscountedProduct.times(it.product.price!!.times(it.product.deal.discount!!).div(100)))
 
+                    // Add normal price
+                    val nbNonDiscountedProduct = it.quantity.minus(nbDiscountedProduct)
+                    totalPrice = totalPrice.plus(nbNonDiscountedProduct.times(it.product.price))
+                } else {
+                    totalPrice = totalPrice.plus(it.quantity.times(it.product.price!!))
+                }
+
+                // Handling Bundles
+                val bundle = try{ bundleService.getBundle(it.product.id!!)}
+                                catch (ex: Exception) {null}
+                if (bundle != null) {
+                    val offeredProductInBasket = try { basketService.getBasketProductByProductId(bundle.offeredProduct!!.id!!) }
+                                                    catch (ex:Exception){null}
+
+                    if(offeredProductInBasket != null) {
+                        if(it.quantity >= offeredProductInBasket.quantity)
+                            totalPrice = totalPrice.minus(offeredProductInBasket.product!!.price!!.times(offeredProductInBasket.quantity))
+                        else
+                            totalPrice = totalPrice.minus(offeredProductInBasket.product!!.price!!.times(it.quantity))
+                    }
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(totalPrice)
+
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
+    }
 }

@@ -171,4 +171,19 @@ class BasketProductControllerTest {
         Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @Test
+    fun `get basket total price and get 200 OK`() {
+        builder.clear()
+
+        val endpoint = builder.append(SERVER_URL).append("/basket/total").toString()
+
+        val result : ResponseEntity<String> = restTemplate.getForEntity(
+                endpoint,
+                Double::class
+        )
+
+        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(result.body).isEqualTo(2800.0.toString())
+
+    }
 }
