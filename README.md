@@ -27,5 +27,6 @@ The store owner can :
   ```
   
 To try the API, go to : http://localhost:8080/swagger-ui.html
+
 You can also access the embedded database here : http://localhost:8080/h2_console
   
