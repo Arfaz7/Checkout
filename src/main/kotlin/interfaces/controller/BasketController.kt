@@ -26,7 +26,6 @@ class BasketController(@Autowired
 
         logger.info("Get all basket products")
 
-        var response: ResponseEntity<List<BasketProductDto>>
         val basketProducts = basketService.getAllBasketProducts()
         return ResponseEntity.status(HttpStatus.OK).body(basketProducts)
     }
@@ -36,26 +35,21 @@ class BasketController(@Autowired
 
         logger.info("Add product : ${productName} to basket")
 
-        var response: ResponseEntity<BasketProductDto>
-        val product = productService.getProduct(productName)
+        return try {
+            val product = productService.getProduct(productName)
 
-        if (product != null) {
             val basketProduct = BasketProductDto(
                     id = -1,
                     quantity = 1,
                     product = product
             )
+
             val insertedBasketProduct = basketService.addOrUpdateBasketProduct(basketProduct)
-
-            if(insertedBasketProduct != null)
-                response = ResponseEntity.status(HttpStatus.OK).body(insertedBasketProduct)
-            else
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+            ResponseEntity.status(HttpStatus.OK).body(insertedBasketProduct)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         }
-        else
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-
-        return response
     }
 
     @PostMapping(value = ["/update"])

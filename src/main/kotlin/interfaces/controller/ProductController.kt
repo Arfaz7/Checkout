@@ -1,6 +1,8 @@
 package com.checkout.interfaces.controller
 
 import com.checkout.infrastructure.repository.ProductService
+import com.checkout.infrastructure.services.BasketService
+import com.checkout.infrastructure.services.BundleService
 import com.checkout.interfaces.dto.ProductDto
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiParam
@@ -14,7 +16,11 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(value = ["/api/v1/product"])
 @Api(tags = ["product"], value= "Methods to manipulate product")
 class ProductController(@Autowired
-                        val productService: ProductService) {
+                        val productService: ProductService,
+                        @Autowired
+                        val bundleService: BundleService,
+                        @Autowired
+                        val basketService: BasketService) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -25,15 +31,13 @@ class ProductController(@Autowired
 
         logger.info("Getting product: ${productName}")
 
-        var response : ResponseEntity<ProductDto>
-        val result = productService.getProduct(productName)
-
-        if (result == null)
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        else
-            response = ResponseEntity.status(HttpStatus.OK).body(result)
-
-        return response
+        return try{
+            val result = productService.getProduct(productName)
+            ResponseEntity.status(HttpStatus.OK).body(result)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        }
     }
 
     @PostMapping(value= ["/create"])
@@ -41,24 +45,13 @@ class ProductController(@Autowired
 
         logger.info("Creating product ${productDto}")
 
-        var response : ResponseEntity<ProductDto>
-        val createdProduct: ProductDto? = productService.createOrUpdateProduct(
-                ProductDto(id = -1,
-                        type = productDto.type,
-                        name = productDto.name,
-                        price = productDto.price,
-                        description = productDto.description,
-                        remainingQty = productDto.remainingQty,
-                        deal = null
-                )
-        )
-
-        if (createdProduct == null)
-            response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-        else
-            response = ResponseEntity.status(HttpStatus.CREATED).body(createdProduct)
-
-        return response
+        return try {
+            val createdProduct: ProductDto? = productService.createOrUpdateProduct(productDto.copy(id = -1, deal = null))
+            ResponseEntity.status(HttpStatus.CREATED).body(createdProduct)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
     }
 
     @PutMapping(value= ["/update/price"])
@@ -67,33 +60,16 @@ class ProductController(@Autowired
 
         logger.info("Updating product ${productName} with price ${productPrice}")
 
-        var response : ResponseEntity<ProductDto>
+        return try {
+            val product = productService.getProduct(productName)
+            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product!!.copy(price = productPrice))
 
-        val product = productService.getProduct(productName)
-
-        if (product != null) {
-            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(
-                    ProductDto(id = product.id,
-                            type = product.type,
-                            name = product.name,
-                            price = productPrice,
-                            description = product.description,
-                            remainingQty = product.remainingQty,
-                            deal = null
-                    )
-            )
-
-            if (updatedProduct != null)
-                response = ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
-            else
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-
+            if (updatedProduct != null) ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
+            else ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         }
-        else {
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
-
-        return response
     }
 
     @PutMapping(value= ["/update/description"])
@@ -102,33 +78,15 @@ class ProductController(@Autowired
 
         logger.info("Updating product ${productName} description")
 
-        var response : ResponseEntity<ProductDto>
+        return try {
+            val product = productService.getProduct(productName)
 
-        val product = productService.getProduct(productName)
-
-        if (product != null) {
-            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(
-                    ProductDto(id = product.id,
-                            type = product.type,
-                            name = product.name,
-                            price = product.price,
-                            description = productDescription,
-                            remainingQty = product.remainingQty,
-                            deal = null
-                    )
-            )
-
-            if (updatedProduct != null)
-                response = ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
-            else
-                response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
-
+            val updatedProduct: ProductDto? = productService.createOrUpdateProduct(product!!.copy(description = productDescription))
+            ResponseEntity.status(HttpStatus.OK).body(updatedProduct)
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
-        else {
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
-
-        return response
     }
 
 
@@ -137,16 +95,24 @@ class ProductController(@Autowired
 
         logger.info("Updating product ${productName} description")
 
-        var response : ResponseEntity<String>
-        val product = productService.getProduct(productName)
+        return try {
+            val product = productService.getProduct(productName)
 
-        if (product != null) {
-            val result = productService.deleteProduct(product)
-            response = ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
-        } else {
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR PRODUCT NOT FOUND")
+            // Remove product from basket
+            val basket = basketService.getBasketProductByProductId(product!!.id!!)
+            if (basket != null) basketService.removeBasketProduct(basket)
+
+            // Delete product bundle
+            val bundle = bundleService.getBundle(product.id!!)
+            if(bundle != null) bundleService.deleteBundle(bundle.id!!)
+
+            productService.deleteProduct(product)
+
+            ResponseEntity.status(HttpStatus.OK).body("SUCCESS")
+
+        } catch (ex: Exception) {
+            logger.error(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
-
-        return response
     }
 }

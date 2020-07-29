@@ -182,7 +182,7 @@ class ProductControllerTest {
     }
 
     @Test
-    fun `update description of a non existing product and get 404 NOT FOUND`() {
+    fun `update description of a non existing product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -201,7 +201,7 @@ class ProductControllerTest {
                 ProductDto::class
         )
 
-        assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(result.body).isNull()
     }
 
@@ -237,7 +237,7 @@ class ProductControllerTest {
 
     // Delete endpoint test
     @Test
-    fun `delete a non existing product and get 404 NOT FOUND`() {
+    fun `delete a non existing product and get 500 INTERNAL SERVER ERROR`() {
         builder.clear()
 
         val productName = "DELL 170"
@@ -250,8 +250,8 @@ class ProductControllerTest {
                 String::class
         )
 
-        assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        assertThat(result.body).isEqualTo("ERROR PRODUCT NOT FOUND")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(result.body).isEqualTo(null)
     }
 
     @Test

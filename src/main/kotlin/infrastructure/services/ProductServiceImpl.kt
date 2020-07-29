@@ -15,7 +15,7 @@ class ProductServiceImpl(@Autowired
 
     override fun getProduct(name: String): ProductDto? {
         val product : Product = productRepository.findByName(name)
-        return if(product != null) toDto(product) else null
+        return toDto(product)
     }
 
     override fun createOrUpdateProduct(productDto: ProductDto): ProductDto?{
@@ -23,10 +23,8 @@ class ProductServiceImpl(@Autowired
         return toDto(product)
     }
 
-    override fun deleteProduct(productDto: ProductDto): Boolean {
-        productRepository.delete(toEntity(productDto))
-        return true
-    }
+    override fun deleteProduct(productDto: ProductDto) = productRepository.delete(toEntity(productDto))
+
 
     override fun toDto(product: Product): ProductDto = ProductDto(id = product.id,
             type = product.type,
